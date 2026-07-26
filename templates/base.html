@@ -1,0 +1,230 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <title>{% block title %}SnapShop{% endblock %}</title>
+    <script>
+    (function () {
+        try {
+            var p = JSON.parse(localStorage.getItem("snapshop_platform_prefs_v1") || "{}");
+            var mode = p.themeMode || "light";
+            var resolved = mode;
+            if (mode === "system") {
+                resolved = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+            } else {
+                resolved = mode === "dark" ? "dark" : "light";
+            }
+            document.documentElement.setAttribute("data-theme", resolved);
+            document.querySelector('meta[name="color-scheme"]')?.setAttribute("content", resolved);
+        } catch (e) { /* ignore */ }
+    })();
+    </script>
+    {% block extra_head %}{% endblock %}
+    {% block meta %}
+    <meta property="og:title" content="SnapShop">
+    <meta property="og:description" content="Marketplace mobile first pour boutiques locales.">
+    {% endblock %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        peach: { DEFAULT: '#f5e6d3', dark: '#e8d4bc', text: '#c47a3a' },
+                        snap: { bg: '#faf9f7', border: '#e8e4df' },
+                    },
+                },
+            },
+        };
+    </script>
+    <link rel="stylesheet" href="{% static 'css/snapshop-theme.css' %}">
+</head>
+<body class="snapshop-body">
+    <header class="header-snapshop sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+            <a href="/" class="logo-snapshop">SnapShop</a>
+
+            <div class="hidden md:flex items-center gap-2">
+                <button
+                    type="button"
+                    data-open-platform-settings
+                    class="btn-menu-peach inline-flex items-center justify-center active:scale-[0.98]"
+                    aria-expanded="false"
+                    aria-controls="platform-settings-panel"
+                    aria-label="Paramètres"
+                    title="Paramètres"
+                >
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                </button>
+                <!-- <nav class="text-sm flex items-center gap-4">
+                    <a class="snap-nav-link {% if request.path == '/' %}is-active{% endif %}" href="/">Accueil</a>
+                    {% if user.is_authenticated and user.role == 'SELLER' %}
+                        <a class="snap-nav-link {% if request.path|slice:':16' == '/shops/dashboard/' %}is-active{% endif %}" href="{% url 'seller_dashboard' %}">Explorer</a>
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                        <a class="snap-nav-link {% if request.path|slice:':11' == '/dashboard/' %}is-active{% endif %}" href="{% url 'dashboard' %}">Profil</a>
+                    {% endif %}
+                    {% if user.is_authenticated and user.is_staff %}
+                        <a class="snap-nav-link" href="{% url 'moderation_dashboard' %}">Moderation</a>
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                        <a class="snap-nav-link" href="/accounts/logout/">Sortir</a>
+                    {% else %}
+                        <a href="{% url 'account_login' %}" class="snap-nav-link text-sm">Connexion</a>
+                        <a href="{% url 'signup' %}" class="px-3 py-1.5 rounded-lg bg-peach-text text-white text-sm font-semibold">Inscription</a>
+                    {% endif %}
+                </nav> -->
+            </div>
+
+            <div class="flex md:hidden items-center gap-2">
+                <button
+                    type="button"
+                    data-open-platform-settings
+                    class="btn-menu-peach inline-flex items-center justify-center active:scale-[0.98]"
+                    aria-expanded="false"
+                    aria-controls="platform-settings-panel"
+                    aria-label="Paramètres"
+                >
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                </button>
+                <!-- <button
+                    id="mobile-menu-button"
+                    type="button"
+                    class="btn-menu-peach inline-flex items-center justify-center active:scale-[0.98]"
+                    aria-controls="mobile-menu"
+                    aria-expanded="false"
+                    aria-label="Ouvrir le menu"
+                >
+                    <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M4 7h16" />
+                        <path d="M4 12h16" />
+                        <path d="M4 17h16" />
+                    </svg>
+                </button> -->
+            </div>
+        </div>
+
+        {% include 'partials/platform_settings.html' %}
+
+        <div id="mobile-menu-overlay" class="md:hidden fixed inset-0 z-40 hidden platform-settings-overlay" aria-hidden="true"></div>
+        <div id="mobile-menu" class="md:hidden fixed top-0 right-0 z-50 hidden h-[100dvh] w-[86%] max-w-sm shadow-2xl">
+            <div class="p-4 border-b border-snap-border flex items-center justify-between">
+                <p class="logo-snapshop text-lg">SnapShop</p>
+                <button
+                    id="mobile-menu-close"
+                    type="button"
+                    class="btn-menu-peach active:scale-[0.98]"
+                    aria-label="Fermer le menu"
+                >
+                    <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M6 6l12 12" />
+                        <path d="M18 6l-12 12" />
+                    </svg>
+                </button>
+            </div>
+            <nav class="p-4 grid gap-2 text-sm" aria-label="Menu mobile">
+                <a class="rounded-xl px-3 py-2 hover:bg-peach {% if request.path == '/' %}bg-peach font-semibold{% endif %}" href="/">Accueil</a>
+                {% if user.is_authenticated and user.role == 'SELLER' %}
+                    <a class="rounded-xl px-3 py-2 hover:bg-peach {% if request.path|slice:':16' == '/shops/dashboard/' %}bg-peach font-semibold{% endif %}" href="{% url 'seller_dashboard' %}">Explorer</a>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <a class="rounded-xl px-3 py-2 hover:bg-peach {% if request.path|slice:':11' == '/dashboard/' %}bg-peach font-semibold{% endif %}" href="{% url 'dashboard' %}">Profil</a>
+                {% endif %}
+                {% if user.is_authenticated and user.is_staff %}
+                    <a class="rounded-xl px-3 py-2 hover:bg-peach" href="{% url 'moderation_dashboard' %}">Moderation</a>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <a class="rounded-xl px-3 py-2 hover:bg-peach" href="/accounts/logout/">Sortir</a>
+                {% else %}
+                    <a class="rounded-xl px-3 py-2 hover:bg-peach" href="{% url 'account_login' %}">Connexion</a>
+                    <a class="rounded-xl px-3 py-2 bg-peach-text text-white font-semibold" href="{% url 'signup' %}">Inscription</a>
+                {% endif %}
+            </nav>
+        </div>
+
+        <script>
+        (() => {
+            const btn = document.getElementById("mobile-menu-button");
+            const closeBtn = document.getElementById("mobile-menu-close");
+            const panel = document.getElementById("mobile-menu");
+            const overlay = document.getElementById("mobile-menu-overlay");
+            if (!btn || !closeBtn || !panel || !overlay) return;
+            const open = () => {
+                overlay.classList.remove("hidden");
+                panel.classList.remove("hidden");
+                btn.setAttribute("aria-expanded", "true");
+                document.body.style.overflow = "hidden";
+                window.setTimeout(() => closeBtn.focus(), 0);
+            };
+            const close = () => {
+                overlay.classList.add("hidden");
+                panel.classList.add("hidden");
+                btn.setAttribute("aria-expanded", "false");
+                document.body.style.overflow = "";
+                btn.focus();
+            };
+            btn.addEventListener("click", () => {
+                btn.getAttribute("aria-expanded") === "true" ? close() : open();
+            });
+            closeBtn.addEventListener("click", close);
+            overlay.addEventListener("click", close);
+            window.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && btn.getAttribute("aria-expanded") === "true") close();
+            });
+        })();
+        </script>
+    </header>
+    <main class="max-w-6xl mx-auto px-4 py-6 pb-28">
+        {% block content %}{% endblock %}
+    </main>
+    <nav class="fixed bottom-0 inset-x-0 z-30 md:hidden" aria-label="Navigation principale">
+        <div class="mx-auto max-w-lg px-3 pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)] pt-2">
+            <div class="nav-bottom-snapshop grid {% if user.is_authenticated and user.role == 'SELLER' %}grid-cols-4{% elif user.is_authenticated %}grid-cols-3{% else %}grid-cols-4{% endif %} text-center">
+                <a href="/" class="{% if request.path == '/' %}is-active{% endif %}" aria-current="{% if request.path == '/' %}page{% endif %}" aria-label="Accueil">
+                    <span class="nav-icon-wrap">
+                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+                    </span>
+                    <span class="sr-only sm:not-sr-only sm:inline">Accueil</span>
+                </a>
+                {% if user.is_authenticated and user.role == 'SELLER' %}
+                    <a href="{% url 'seller_dashboard' %}" class="{% if request.path|slice:':16' == '/shops/dashboard/' %}is-active{% endif %}" aria-label="Explorer">
+                        <span class="nav-icon-wrap">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        </span>
+                        <span class="sr-only sm:not-sr-only sm:inline">Explorer</span>
+                    </a>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="{% if request.path|slice:':11' == '/dashboard/' %}is-active{% endif %}" aria-label="Profil">
+                        <span class="nav-icon-wrap">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+                        </span>
+                        <span class="sr-only sm:not-sr-only sm:inline">Profil</span>
+                    </a>
+                {% else %}
+                    <a href="{% url 'account_login' %}" aria-label="Connexion">
+                        <span class="nav-icon-wrap">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+                        </span>
+                        <span class="sr-only sm:not-sr-only sm:inline">Connexion</span>
+                    </a>
+                {% endif %}
+                <a href="{% if user.is_authenticated %}{% url 'account_logout' %}{% else %}{% url 'signup' %}{% endif %}" aria-label="{% if user.is_authenticated %}Sortir{% else %}Inscription{% endif %}">
+                    <span class="nav-icon-wrap">
+                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+                    </span>
+                    <span class="sr-only sm:not-sr-only sm:inline">{% if user.is_authenticated %}Sortir{% else %}Inscription{% endif %}</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <script src="{% static 'js/platform-settings.js' %}" defer></script>
+</body>
+</html>

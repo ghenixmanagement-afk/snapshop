@@ -1,0 +1,28 @@
+{% extends "account/auth_base.html" %}
+{% load i18n %}
+
+{% block auth_head_title %}Déconnexion{% endblock %}
+
+{% block auth_body %}
+<h1 class="text-2xl font-black tracking-tight text-slate-900">Se déconnecter ?</h1>
+<p class="mt-2 text-sm text-slate-600">Vous devrez vous reconnecter pour accéder à votre tableau de bord.</p>
+
+<form method="post" action="{% url 'account_logout' %}" class="mt-8 space-y-4">
+    {% csrf_token %}
+    {% if redirect_field %}
+        {{ redirect_field }}
+    {% endif %}
+    <button
+        type="submit"
+        class="w-full rounded-xl bg-slate-900 px-4 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+    >
+        Confirmer la déconnexion
+    </button>
+    <a
+        href="/"
+        class="block w-full rounded-xl border border-slate-200 py-3.5 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+    >
+        Annuler — retour à l’accueil
+    </a>
+</form>
+{% endblock %}

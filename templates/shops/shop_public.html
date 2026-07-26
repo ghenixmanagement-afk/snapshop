@@ -1,0 +1,403 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ shop.name }} - SnapShop{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/shop-vitrine.css' %}">
+{% endblock %}
+{% block meta %}
+<meta property="og:title" content="{{ shop.name }} - SnapShop">
+<meta property="og:description" content="{{ shop.description|default:'Decouvrez nos produits sur SnapShop' }}">
+<meta property="og:url" content="{{ shop_url }}">
+{% if og_image %}<meta property="og:image" content="{{ og_image }}">{% endif %}
+{% endblock %}
+{% block content %}
+<div class="shop-vitrine-root {{ shop_branding.theme_class }}" style="{{ shop_branding.css_vars }}" data-shop-brand="{{ shop_branding.brand_color }}">
+
+<header class="shop-header sticky top-0 z-50 shadow-sm">
+    <div class="flex items-center justify-between px-4 py-3">
+        <a href="/" class="opacity-90 hover:opacity-100 transition" title="Retour à l'accueil" aria-label="Retour">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </a>
+        <div class="flex-1 flex items-center justify-center gap-2 mx-2 min-w-0">
+            {% if shop_branding.logo_url %}
+                <img src="{{ shop_branding.logo_url }}" alt="" class="h-9 w-9 rounded-lg object-cover shrink-0 border border-white/30" width="36" height="36">
+            {% endif %}
+            <div class="min-w-0 text-center">
+                <h1 class="text-sm font-bold truncate">{{ shop.name }}</h1>
+                <p class="text-xs shop-header-sub truncate">{{ shop.city|default:"SnapShop" }} · {{ shop_branding.theme_label }}</p>
+            </div>
+        </div>
+        <a href="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data={{ shop_url|urlencode }}" target="_blank" class="opacity-90 hover:opacity-100 transition" title="QR code" aria-label="QR code">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"></path>
+            </svg>
+        </a>
+    </div>
+</header>
+
+<!-- Bannière Héros : Carousel/Grid de produits tendances -->
+<section class="shop-hero relative overflow-hidden">
+    {% if trending_products %}
+        <!-- Carrousel horizontal avec produit central agrandi -->
+        <div class="px-4 py-6">
+            <div class="relative flex items-center justify-center">
+                <!-- Scroll container -->
+                <div 
+                    id="products-carousel" 
+                    class="flex gap-3 overflow-x-hidden scroll-smooth snap-x snap-mandatory"
+                    style="scroll-behavior: smooth;"
+                >
+                    {% for product in trending_products %}
+                        <div class="flex-shrink-0 snap-center transition-all duration-300" data-product-index="{{ forloop.counter }}">
+                            <div class="w-40 h-40 carousel-item bg-white rounded-lg overflow-hidden shadow-sm border border-slate-200 flex items-center justify-center">
+                                {% if product.image %}
+                                    <img 
+                                        src="{{ product.image.url }}" 
+                                        alt="{{ product.name }}" 
+                                        class="w-full h-full object-cover hover:scale-105 transition-transform duration-300 cursor-pointer"
+                                    >
+                                {% else %}
+                                    <div class="w-full h-full bg-slate-200 flex items-center justify-center">
+                                        <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                            <path d="M21 15l-5-5L5 21"></path>
+                                        </svg>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <p class="text-xs text-slate-600 mt-2 text-center line-clamp-1">{{ product.name }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Boutons de navigation -->
+                <button id="carousel-prev" class="absolute left-0 z-10 p-2 rounded-full bg-white/80 hover:bg-white shadow-md transition">
+                    <svg class="w-5 h-5 text-slate-900" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <button id="carousel-next" class="absolute right-0 z-10 p-2 rounded-full bg-white/80 hover:bg-white shadow-md transition">
+                    <svg class="w-5 h-5 text-slate-900" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Indicateurs de position -->
+            <div class="flex justify-center gap-1.5 mt-4">
+                {% for product in trending_products %}
+                    <div id="dot-{{ forloop.counter }}" class="h-1.5 bg-slate-300 rounded-full transition-all duration-300" style="width: 0.375rem;"></div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Logo incrusté (badge circulaire) -->
+    <div class="relative -mt-8 flex justify-center px-4">
+        <div class="w-28 h-28 rounded-2xl border-4 shop-logo-ring shadow-lg overflow-hidden">
+            {% if shop_branding.logo_url %}
+                <img src="{{ shop_branding.logo_url }}" alt="{{ shop.name }}" class="w-full h-full object-cover aspect-square" width="112" height="112">
+            {% else %}
+                <div class="w-full h-full shop-logo-fallback flex items-center justify-center font-bold text-3xl uppercase">
+                    {{ shop.name|first }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<script>
+(function() {
+    const carousel = document.getElementById('products-carousel');
+    const prevBtn = document.getElementById('carousel-prev');
+    const nextBtn = document.getElementById('carousel-next');
+    
+    if (!carousel) return;
+
+    const items = carousel.querySelectorAll('[data-product-index]');
+    const itemWidth = 160 + 12; // w-40 (160px) + gap (12px)
+    let currentIndex = 0;
+    let autoScrollInterval;
+
+    function updateCarousel() {
+        // Scroll vers l'item actuel au centre
+        const scrollOffset = (currentIndex * itemWidth) - (carousel.offsetWidth / 2 - itemWidth / 2);
+        carousel.scrollLeft = scrollOffset;
+
+        // Mettre à jour les indicateurs
+        document.querySelectorAll('[id^="dot-"]').forEach((dot, idx) => {
+            if (idx === currentIndex) {
+                dot.style.width = '1.5rem';
+                dot.classList.add('carousel-dot-active');
+                dot.classList.remove('bg-stone-300');
+            } else {
+                dot.style.width = '0.375rem';
+                dot.classList.remove('carousel-dot-active');
+                dot.style.backgroundColor = '';
+                dot.classList.add('bg-stone-300');
+            }
+        });
+    }
+
+    function nextSlide() {
+        currentIndex = (currentIndex + 1) % items.length;
+        updateCarousel();
+    }
+
+    function prevSlide() {
+        currentIndex = (currentIndex - 1 + items.length) % items.length;
+        updateCarousel();
+    }
+
+    function startAutoScroll() {
+        autoScrollInterval = setInterval(nextSlide, 4000); // Change tous les 4 secondes
+    }
+
+    function resetAutoScroll() {
+        clearInterval(autoScrollInterval);
+        startAutoScroll();
+    }
+
+    prevBtn.addEventListener('click', () => {
+        prevSlide();
+        resetAutoScroll();
+    });
+
+    nextBtn.addEventListener('click', () => {
+        nextSlide();
+        resetAutoScroll();
+    });
+
+    // Démarrer le défilement automatique
+    startAutoScroll();
+    updateCarousel();
+
+    // Pause au survol
+    carousel.addEventListener('mouseenter', () => clearInterval(autoScrollInterval));
+    carousel.addEventListener('mouseleave', startAutoScroll);
+})();
+</script>
+
+<!-- Section Profil et Action Principale -->
+<section class="shop-profile px-4 py-6 text-center border-b">
+    <!-- Identité du commerce -->
+    <div class="mb-4">
+        <div class="flex items-center justify-center gap-2 mb-2">
+            <h1 class="text-2xl font-black">{{ shop.name }}</h1>
+            <span class="shop-theme-badge inline-block mt-1 text-xs font-semibold px-2 py-0.5 rounded-full">{{ shop_branding.theme_label }}</span>
+            <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+        </div>
+        <p class="shop-muted text-sm mb-3">{{ shop.description }}</p>
+    </div>
+    
+    <!-- Infos localisation -->
+    <p class="text-xs text-slate-500 mb-4 flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+        </svg>
+        {{ shop.city|default:"Cameroun" }} • {{ shop.location }}
+    </p>
+    
+    <!-- Bouton CTA Principal WhatsApp -->
+    {% if shop.whatsapp_number %}
+        <a href="https://api.whatsapp.com/send/?phone={{ shop.whatsapp_number|cut:' '|cut:'-'|cut:'.' }}&text=Bonjour%20{{ shop.name|urlencode }}%2C%20j%27aimerais%20en%20savoir%20plus%20sur%20vos%20produits" target="_blank" class="shop-whatsapp inline-flex w-full items-center justify-center gap-2 py-3 px-4 mb-4">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773c.424 1.986 1.902 4.374 3.976 5.922l.943-1.352a1 1 0 011.155-.213l3.85 2.612a1 1 0 01.29 1.42A9.926 9.926 0 012 13.5a1 1 0 01-1-1V3z"></path>
+            </svg>
+            ENVOYER UN MESSAGE SUR WHATSAPP
+        </a>
+    {% endif %}
+    
+    <!-- Boutons secondaires -->
+    <div class="flex gap-2 justify-center">
+        <button type="button" id="copy-shop-link" data-shop-url="{{ shop_url }}" class="shop-btn-brand flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition flex items-center justify-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+            </svg>
+            partager le lien de la boutique
+        </button>
+        <span id="copy-status" class="text-xs text-slate-600 self-center" aria-live="polite"></span>
+    </div>
+</section>
+
+<!-- Section Catalogue Complet -->
+{% if all_products %}
+    <section class="shop-catalog px-4 py-8">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold">Catalogue</h2>
+            <a href="#" class="shop-link font-semibold text-sm flex items-center gap-1">
+                VOIR TOUT
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                </svg>
+            </a>
+        </div>
+        
+        <!-- Grille de produits 2 colonnes -->
+        <div class="grid grid-cols-2 gap-4">
+            {% for product in all_products %}
+                <a href="{% url 'product_detail' product.slug %}" class="card-ui p-3 group transition hover:shadow-lg">
+                    <div class="relative bg-slate-200 rounded-lg overflow-hidden mb-3 aspect-square">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        {% else %}
+                            <div class="w-full h-full flex items-center justify-center">
+                                <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <path d="M21 15l-5-5L5 21"></path>
+                                </svg>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <p class="text-xs text-slate-500 uppercase tracking-wide">{{ product.category }}</p>
+                    <h3 class="font-semibold text-slate-900 line-clamp-2 mt-1">{{ product.name }}</h3>
+                    <p class="font-black text-lg shop-price mt-2">{{ product.price }} FCFA</p>
+                </a>
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}
+
+<!-- Section Infos et Localisation -->
+<section class="shop-section px-4 py-8 border-t">
+    <h2 class="text-lg font-bold mb-4">Infos</h2>
+    
+    <!-- Statut ouvert -->
+    <div class="{% if shop.is_currently_open %}bg-green-50 border border-green-200{% else %}bg-red-50 border border-red-200{% endif %} rounded-lg p-3 mb-4 flex items-center justify-between transition-colors">
+        <div class="flex items-center gap-2">
+            <div class="w-3 h-3 {% if shop.is_currently_open %}bg-green-500{% else %}bg-red-500{% endif %} rounded-full animate-pulse"></div>
+            <span class="text-sm font-semibold {% if shop.is_currently_open %}text-green-900{% else %}text-red-900{% endif %}">{{ shop.get_status_display_text }}</span>
+        </div>
+        <svg class="w-5 h-5 {% if shop.is_currently_open %}text-green-600{% else %}text-red-600{% endif %}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+        </svg>
+    </div>
+    
+    <!-- Téléphone -->
+    {% if shop.phone %}
+        <a href="tel:{{ shop.phone }}" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition mb-3">
+            <svg class="w-5 h-5 text-slate-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773c.424 1.986 1.902 4.374 3.976 5.922l.943-1.352a1 1 0 011.155-.213l3.85 2.612a1 1 0 01.29 1.42A9.926 9.926 0 012 13.5a1 1 0 01-1-1V3z"></path>
+            </svg>
+            <div>
+                <p class="text-xs text-slate-500">Téléphone</p>
+                <p class="font-semibold text-slate-900">{{ shop.phone }}</p>
+            </div>
+            <svg class="w-4 h-4 text-slate-400 ml-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M9 5l7 7-7 7"></path>
+            </svg>
+        </a>
+    {% endif %}
+    
+    <!-- Carte interactive (placeholder) -->
+    <div class="mt-6 rounded-lg overflow-hidden border border-slate-200 shadow-sm bg-slate-100 h-48 flex items-center justify-center">
+        <div class="text-center">
+            <svg class="w-12 h-12 text-slate-400 mx-auto mb-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M9 20l-5.447-2.724A1 1 0 003 16.382V5.618a1 1 0 011.553-.894L9 7.5m0 0l6-3.75M9 7.5v12.5m6-21l5.447 2.724A1 1 0 0021 7.618v10.764a1 1 0 01-1.553.894L15 12.5m0 0l-6 3.75m6-3.75v12.5"></path>
+            </svg>
+            <p class="text-sm text-slate-500">{{ shop.location|default:"Localisation" }}</p>
+        </div>
+    </div>
+</section>
+
+<!-- Section Réseaux Sociaux -->
+<section class="shop-catalog px-4 py-8 border-t">
+    <h2 class="text-lg font-bold mb-4">Suivez-nous</h2>
+    
+    <!-- Facebook -->
+    {% if shop.facebook %}
+        <a href="{{ shop.facebook }}" target="_blank" class="card-ui p-4 mb-3 flex items-center gap-3 hover:shadow-lg transition">
+            <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center text-white flex-shrink-0">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path>
+                </svg>
+            </div>
+            <div class="flex-1">
+                <p class="text-xs text-slate-500">Facebook</p>
+                <p class="font-semibold text-slate-900 truncate">{{ shop.facebook }}</p>
+            </div>
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M9 5l7 7-7 7"></path>
+            </svg>
+        </a>
+    {% endif %}
+    
+    <!-- Instagram -->
+    {% if shop.instagram %}
+        <a href="{{ shop.instagram }}" target="_blank" class="card-ui p-4 flex items-center gap-3 hover:shadow-lg transition">
+            <div class="w-12 h-12 bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 rounded-lg flex items-center justify-center text-white flex-shrink-0">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.117.6c-.588.147-1.096.355-1.588.703-.492.348-.9.766-1.203 1.26-.336.588-.546 1.131-.666 1.944-.12.813-.135 1.053-.135 3.476s.015 2.663.072 3.948c.06 1.27.26 2.14.58 2.91.32.772.82 1.49 1.45 2.063.69.56 1.35.744 1.97.9.6.15 1.25.276 2.032.348 1.696.15 2.764.072 4.151.072 1.297 0 1.657 0 4.877 0s3.484 0 3.744-.072c1.06-.075 1.814-.235 2.308-.42.470-.15.820-.42 1.221-.823.4-.403.776-.973.972-1.5.276-.784.46-1.717.52-2.43.045-.56.06-1.221.045-3.68 0-2.522-.015-2.802-.06-4.151-.045-1.35-.192-2.106-.522-2.847-.32-.72-.82-1.43-1.426-1.971-.6-.56-1.312-.912-2.063-1.132-.847-.22-1.58-.333-2.344-.375C10.656.01 10.296 0 12.147 0l4.026.072m-8.022.648c1.671.06 2.595.328 3.21.603.809.31 1.432.793 1.96 1.314.527.521 1.002 1.135 1.313 1.944.274.616.542 1.54.603 3.21.06 1.671.075 2.188.075 6.408 0 4.22-.015 4.738-.075 6.408-.06 1.671-.329 2.594-.603 3.21-.31.809-.786 1.432-1.313 1.96-.522.527-1.151 1.002-1.96 1.313-.616.274-1.54.542-3.21.603-1.671.06-2.188.075-6.408.075-4.22 0-4.738-.015-6.408-.075-1.671-.06-2.595-.329-3.21-.603-.809-.31-1.432-.786-1.96-1.313-.527-.528-1.002-1.151-1.313-1.96-.274-.616-.542-1.54-.603-3.21-.06-1.671-.075-2.188-.075-6.408 0-4.22.015-4.738.075-6.408.06-1.671.329-2.594.603-3.21.31-.809.786-1.432 1.313-1.96.528-.522 1.151-1.002 1.96-1.313.616-.274 1.54-.542 3.21-.603 1.671-.06 2.188-.075 6.408-.075"></path>
+                </svg>
+            </div>
+            <div class="flex-1">
+                <p class="text-xs text-slate-500">Instagram</p>
+                <p class="font-semibold text-slate-900 truncate">{{ shop.instagram }}</p>
+            </div>
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M9 5l7 7-7 7"></path>
+            </svg>
+        </a>
+    {% endif %}
+</section>
+
+<!-- Scripts -->
+<script>
+(() => {
+    const button = document.getElementById("copy-shop-link");
+    const status = document.getElementById("copy-status");
+    if (!button) return;
+
+    const setStatus = (message) => {
+        if (!status) return;
+        status.textContent = message;
+        window.setTimeout(() => {
+            if (status.textContent === message) status.textContent = "";
+        }, 2200);
+    };
+
+    const fallbackCopy = (text) => {
+        const temp = document.createElement("textarea");
+        temp.value = text;
+        temp.setAttribute("readonly", "");
+        temp.style.position = "fixed";
+        temp.style.left = "-9999px";
+        document.body.appendChild(temp);
+        temp.select();
+        const copied = document.execCommand("copy");
+        document.body.removeChild(temp);
+        return copied;
+    };
+
+    button.addEventListener("click", async () => {
+        const url = button.dataset.shopUrl || window.location.href;
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(url);
+                setStatus("Lien copié ✓");
+                return;
+            }
+            if (fallbackCopy(url)) {
+                setStatus("Lien copié ✓");
+                return;
+            }
+            setStatus("Copie impossible.");
+        } catch (error) {
+            if (fallbackCopy(url)) {
+                setStatus("Lien copié ✓");
+                return;
+            }
+            setStatus("Copie impossible.");
+        }
+    });
+})();
+</script>
+
+</div>
+{% endblock %}

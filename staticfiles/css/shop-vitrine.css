@@ -1,0 +1,123 @@
+/* Vitrine publique — variables injectées par boutique */
+.shop-vitrine-root {
+    background: var(--shop-page-bg);
+    color: var(--shop-text);
+    margin-left: -1rem;
+    margin-right: -1rem;
+    margin-top: -1.5rem;
+    padding-bottom: 0.5rem;
+}
+
+@media (min-width: 640px) {
+    .shop-vitrine-root {
+        margin-left: 0;
+        margin-right: 0;
+        margin-top: 0;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        border: 1px solid var(--shop-border);
+    }
+}
+
+.shop-vitrine-root .shop-header {
+    background: var(--shop-brand);
+    color: var(--shop-brand-text);
+    border-bottom: 1px solid var(--shop-brand-dark);
+}
+
+.shop-vitrine-root .shop-header a {
+    color: var(--shop-brand-text);
+}
+
+.shop-vitrine-root .shop-header .shop-header-sub {
+    opacity: 0.85;
+}
+
+.shop-vitrine-root .shop-hero {
+    background: linear-gradient(180deg, var(--shop-hero-from), var(--shop-hero-to));
+}
+
+.shop-vitrine-root .shop-logo-ring {
+    border-color: var(--shop-surface);
+    background: var(--shop-surface);
+}
+
+.shop-vitrine-root .shop-logo-fallback {
+    background: linear-gradient(135deg, var(--shop-brand-soft), var(--shop-brand-light));
+    color: var(--shop-brand);
+}
+
+.shop-vitrine-root .shop-profile {
+    background: var(--shop-surface);
+    color: var(--shop-text);
+    border-color: var(--shop-border);
+}
+
+.shop-vitrine-root .shop-muted {
+    color: var(--shop-muted);
+}
+
+.shop-vitrine-root .shop-catalog {
+    background: var(--shop-catalog-bg);
+}
+
+.shop-vitrine-root .shop-section {
+    background: var(--shop-surface);
+    border-color: var(--shop-border);
+    color: var(--shop-text);
+}
+
+.shop-vitrine-root .shop-price {
+    color: var(--shop-brand);
+}
+
+.shop-vitrine-root .shop-link {
+    color: var(--shop-brand);
+}
+
+.shop-vitrine-root .shop-link:hover {
+    opacity: 0.85;
+}
+
+.shop-vitrine-root .shop-btn-brand {
+    background: var(--shop-brand);
+    color: var(--shop-brand-text);
+}
+
+.shop-vitrine-root .shop-btn-brand:hover {
+    background: var(--shop-brand-dark);
+}
+
+.shop-vitrine-root .shop-btn-outline {
+    border: 1px solid var(--shop-border);
+    background: var(--shop-surface);
+    color: var(--shop-text);
+}
+
+.shop-vitrine-root .shop-btn-outline:hover {
+    background: var(--shop-brand-soft);
+}
+
+.shop-vitrine-root .shop-whatsapp {
+    background: linear-gradient(90deg, var(--shop-brand-light), var(--shop-brand));
+    color: var(--shop-brand-text);
+    border-radius: 9999px;
+    font-weight: 800;
+    font-style: italic;
+}
+
+.shop-vitrine-root .carousel-dot-active {
+    background: var(--shop-brand) !important;
+    width: 1.5rem !important;
+}
+
+.shop-vitrine-root .card-ui {
+    background: var(--shop-surface);
+    border-color: var(--shop-border);
+}
+
+.shop-vitrine-root .shop-theme-badge {
+    background: var(--shop-brand-soft);
+    color: var(--shop-brand);
+    border: 1px solid var(--shop-border);
+}

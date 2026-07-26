@@ -1,0 +1,445 @@
+:root,
+[data-theme="light"] {
+    --snap-peach: #f5e6d3;
+    --snap-peach-dark: #e8d4bc;
+    --snap-peach-text: #c47a3a;
+    --snap-green-start: #b8f0c8;
+    --snap-green-end: #7ee081;
+    --snap-border: #e8e4df;
+    --snap-bg: #faf9f7;
+    --snap-surface: #ffffff;
+    --snap-surface-elevated: #ffffff;
+    --snap-text: #1a1a1a;
+    --snap-muted: #6b6560;
+    --snap-nav-link: #44403c;
+    --snap-nav-link-hover: #1a1a1a;
+    --snap-header-link: #44403c;
+    --snap-overlay: rgb(28 25 23 / 0.45);
+    --snap-shadow: rgb(15 23 42 / 0.06);
+    --snap-card-radius: 1.25rem;
+    --snap-pill-radius: 9999px;
+    --snap-hero-from: #f5e6d3;
+    --snap-hero-mid: #f0dcc4;
+    --snap-hero-to: #e8cfb8;
+    --snap-active-pill: #ffffff;
+}
+
+/* Sombre sobre : gris chauds légers, accents pêche discrets */
+[data-theme="dark"] {
+    --snap-peach: #4a4541;
+    --snap-peach-dark: #423e3a;
+    --snap-peach-text: #d4a574;
+    --snap-green-start: #5a7a62;
+    --snap-green-end: #6b8f6e;
+    --snap-border: #4a4744;
+    --snap-bg: #3a3835;
+    --snap-surface: #42403d;
+    --snap-surface-elevated: #4a4845;
+    --snap-text: #eceae7;
+    --snap-muted: #a8a29e;
+    --snap-nav-link: #d6d3d1;
+    --snap-nav-link-hover: #fafaf9;
+    --snap-header-link: #e7e5e4;
+    --snap-overlay: rgb(12 10 9 / 0.55);
+    --snap-shadow: rgb(0 0 0 / 0.18);
+    --snap-hero-from: #45423f;
+    --snap-hero-mid: #423f3c;
+    --snap-hero-to: #3a3835;
+    --snap-active-pill: #565350;
+}
+
+body.snapshop-body {
+    background: var(--snap-bg);
+    color: var(--snap-text);
+}
+
+.logo-snapshop {
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: var(--snap-peach-text);
+    letter-spacing: -0.02em;
+}
+
+.snap-nav-link {
+    color: var(--snap-nav-link);
+    transition: color 160ms ease;
+}
+
+.snap-nav-link:hover {
+    color: var(--snap-nav-link-hover);
+}
+
+.snap-nav-link.is-active {
+    color: var(--snap-nav-link-hover);
+    font-weight: 600;
+}
+
+.surface-ui,
+.card-ui {
+    background: var(--snap-surface-elevated);
+    border: 1px solid var(--snap-border);
+    border-radius: var(--snap-card-radius);
+    box-shadow: 0 1px 3px var(--snap-shadow);
+}
+
+.card-ui {
+    transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.card-ui:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgb(0 0 0 / 0.06);
+}
+
+.card-product-image {
+    background: var(--snap-surface-elevated);
+    border: 1px solid var(--snap-border);
+    border-radius: 1.5rem;
+    padding: 1rem;
+}
+
+.card-product-image__frame {
+    border: 1px solid var(--snap-border);
+    border-radius: 1.25rem;
+    overflow: hidden;
+    background: var(--snap-surface);
+}
+
+.card-product-details {
+    background: var(--snap-surface-elevated);
+    border: 1px solid var(--snap-border);
+    border-radius: 1.5rem;
+    padding: 1.25rem 1.5rem;
+}
+
+.product-title {
+    font-weight: 800;
+    font-style: italic;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    color: var(--snap-text);
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    border-radius: 0.75rem;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: var(--snap-peach-text);
+    color: #fff;
+    transition: all 160ms ease;
+}
+
+.btn-primary:hover {
+    filter: brightness(1.08);
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    border-radius: 0.75rem;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: var(--snap-surface-elevated);
+    color: var(--snap-text);
+    border: 1px solid var(--snap-border);
+    transition: all 160ms ease;
+}
+
+.btn-secondary:hover {
+    background: var(--snap-peach);
+    border-color: var(--snap-peach-dark);
+}
+
+.btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    border-radius: 0.75rem;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: 1px solid rgb(255 255 255 / 0.7);
+    color: #fff;
+    transition: all 160ms ease;
+}
+
+.btn-ghost:hover {
+    background: rgb(255 255 255 / 0.12);
+}
+
+.btn-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    border-radius: var(--snap-pill-radius);
+    font-weight: 800;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--snap-text);
+    background: linear-gradient(90deg, var(--snap-green-start), var(--snap-green-end));
+    box-shadow: 0 2px 8px rgb(126 224 129 / 0.35);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.btn-whatsapp:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgb(126 224 129 / 0.45);
+}
+
+.hero-peach {
+    background: linear-gradient(135deg, var(--snap-hero-from) 0%, var(--snap-hero-mid) 50%, var(--snap-hero-to) 100%);
+    color: var(--snap-text);
+    border-radius: 1.5rem;
+    border: 1px solid var(--snap-border);
+}
+
+.hero-peach .btn-ghost {
+    border-color: var(--snap-peach-text);
+    color: var(--snap-peach-text);
+    background: var(--snap-surface-elevated);
+    opacity: 0.85;
+}
+
+.hero-peach .btn-ghost:hover {
+    opacity: 1;
+}
+
+.header-snapshop {
+    background: var(--snap-peach);
+    border-bottom: 1px solid var(--snap-peach-dark);
+}
+
+.btn-menu-peach {
+    background: var(--snap-peach-dark);
+    border: 1px solid rgb(0 0 0 / 0.06);
+    border-radius: 0.75rem;
+    padding: 0.5rem;
+    color: var(--snap-text);
+}
+
+.nav-bottom-snapshop {
+    background: var(--snap-peach);
+    border: 1px solid var(--snap-peach-dark);
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.08);
+}
+
+.nav-bottom-snapshop a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    padding: 0.65rem 0.25rem;
+    color: var(--snap-muted);
+    font-size: 0.65rem;
+    font-weight: 500;
+    transition: color 160ms ease;
+}
+
+.nav-bottom-snapshop a:hover {
+    color: var(--snap-text);
+}
+
+.nav-bottom-snapshop a.is-active {
+    color: var(--snap-text);
+}
+
+.nav-bottom-snapshop a.is-active .nav-icon-wrap {
+    background: var(--snap-active-pill);
+    border-radius: var(--snap-pill-radius);
+    padding: 0.35rem 0.85rem;
+}
+
+.nav-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+}
+
+.icon-btn-round {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 1px solid var(--snap-border);
+    background: var(--snap-surface-elevated);
+    color: var(--snap-text);
+    transition: background 160ms ease;
+}
+
+.icon-btn-round:hover {
+    background: var(--snap-peach);
+}
+
+.section-reviews {
+    background: var(--snap-surface-elevated);
+    border: 1px solid var(--snap-border);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+}
+
+main input[type="text"],
+main input[type="number"],
+main input[type="email"],
+main input[type="password"],
+main input[type="search"],
+main textarea,
+main select {
+    border: 1px solid var(--snap-border);
+    border-radius: 0.75rem;
+    padding: 0.52rem 0.65rem;
+    background: var(--snap-surface);
+    color: var(--snap-text);
+    width: 100%;
+}
+
+main label {
+    font-size: 0.78rem;
+    color: var(--snap-muted);
+}
+
+.catalog-card__img-wrap {
+    border: 1px solid var(--snap-border);
+    border-radius: 1rem;
+    overflow: hidden;
+    aspect-ratio: 1;
+    background: var(--snap-surface);
+}
+
+.catalog-card__img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@media (min-width: 768px) {
+    .product-layout-desktop {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        align-items: start;
+    }
+}
+
+@media (min-width: 1024px) {
+    .catalog-grid-responsive {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1280px) {
+    .catalog-grid-responsive {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+/* ——— Paramètres plateforme ——— */
+.platform-settings-overlay {
+    background: var(--snap-overlay);
+}
+
+.platform-settings-panel {
+    background: var(--snap-surface-elevated);
+    color: var(--snap-text);
+    border: 1px solid var(--snap-border);
+    box-shadow: 0 16px 40px var(--snap-shadow);
+}
+
+.platform-settings-panel__header {
+    background: var(--snap-surface-elevated);
+    border-color: var(--snap-border);
+}
+
+.platform-settings-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--snap-muted);
+}
+
+.platform-settings-hint {
+    color: var(--snap-muted);
+}
+
+.platform-settings-divider {
+    border-color: var(--snap-border);
+}
+
+.platform-settings-segment {
+    background: var(--snap-bg);
+    border: 1px solid var(--snap-border);
+}
+
+.platform-settings-segment__btn {
+    border-radius: 0.65rem;
+    padding: 0.5rem 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--snap-muted);
+    transition: background 160ms ease, color 160ms ease;
+}
+
+.platform-settings-segment__btn:hover {
+    color: var(--snap-text);
+}
+
+.platform-settings-segment__btn.is-active {
+    background: var(--snap-surface-elevated);
+    color: var(--snap-text);
+    box-shadow: 0 1px 4px var(--snap-shadow);
+}
+
+.platform-settings-link {
+    color: var(--snap-text);
+    transition: background 160ms ease;
+}
+
+.platform-settings-link:hover {
+    background: var(--snap-bg);
+}
+
+.platform-settings-toggle {
+    width: 2.5rem;
+    height: 1.35rem;
+    accent-color: var(--snap-peach-text);
+}
+
+#mobile-menu {
+    background: var(--snap-surface-elevated);
+    color: var(--snap-text);
+}
+
+.snap-reduce-motion *,
+.snap-reduce-motion *::before,
+.snap-reduce-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .snap-reduce-motion *,
+    .snap-reduce-motion *::before,
+    .snap-reduce-motion *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}

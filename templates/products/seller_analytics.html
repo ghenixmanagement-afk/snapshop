@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}Analytics vendeur{% endblock %}
+{% block content %}
+<section class="hero-peach p-6 md:p-8 shadow-sm">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+            <p class="text-xs uppercase tracking-wider text-stone-600">Performance boutique</p>
+            <h1 class="mt-1 text-2xl md:text-3xl font-black tracking-tight text-stone-900">Analytics - {{ shop.name }}</h1>
+            <p class="mt-2 text-sm text-stone-700">Suivez les vues produits, clics WhatsApp et conversion.</p>
+        </div>
+        <a href="{% url 'seller_dashboard' %}" class="btn-secondary">Retour dashboard</a>
+    </div>
+</section>
+
+<section class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <article class="card-ui p-5">
+        <p class="text-sm text-slate-500">Vues totales</p>
+        <p class="mt-1 text-3xl font-black text-slate-900">{{ total_views }}</p>
+    </article>
+    <article class="card-ui p-5">
+        <p class="text-sm text-slate-500">Clics WhatsApp totaux</p>
+        <p class="mt-1 text-3xl font-black text-slate-900">{{ total_clicks }}</p>
+    </article>
+    <article class="rounded-xl border border-orange-200 bg-orange-50/60 p-5">
+        <p class="text-sm text-slate-500">Conversion (clics / vues)</p>
+        <p class="mt-1 text-3xl font-black text-slate-900">
+            {% if overall_conversion_pct is not None %}{{ overall_conversion_pct }}%{% else %}—{% endif %}
+        </p>
+        <p class="text-xs text-slate-500 mt-1">Part des vues fiche produit suivies d’un clic WhatsApp.</p>
+    </article>
+</section>
+
+<section class="mt-6 grid md:grid-cols-2 gap-4">
+    <div class="card-ui p-4">
+        <h2 class="font-bold text-sm text-slate-900">Top 5 — vues</h2>
+        <ul class="mt-2 text-sm space-y-2">
+            {% for row in top_by_views %}
+                <li class="flex justify-between gap-2 border-b border-slate-100 pb-2">
+                    <span class="truncate">{{ row.product.name }}</span>
+                    <span class="font-semibold shrink-0 rounded-md bg-slate-100 px-2 py-0.5">{{ row.views_count }}</span>
+                </li>
+            {% empty %}
+                <li class="text-slate-500">Aucune donnee.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="card-ui p-4">
+        <h2 class="font-bold text-sm text-slate-900">Top 5 — clics WhatsApp</h2>
+        <ul class="mt-2 text-sm space-y-2">
+            {% for row in top_by_clicks %}
+                <li class="flex justify-between gap-2 border-b border-slate-100 pb-2">
+                    <span class="truncate">{{ row.product.name }}</span>
+                    <span class="font-semibold shrink-0 rounded-md bg-emerald-50 text-emerald-700 px-2 py-0.5">{{ row.whatsapp_clicks }}</span>
+                </li>
+            {% empty %}
+                <li class="text-slate-500">Aucune donnee.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+
+<section class="mt-6 surface-ui overflow-hidden">
+    <div class="border-b bg-slate-50 px-4 py-3">
+        <h2 class="text-sm font-semibold text-slate-800">Detail par produit</h2>
+    </div>
+    <div class="overflow-x-auto">
+    <table class="w-full text-sm min-w-[620px]">
+        <thead class="bg-slate-100/80">
+            <tr>
+                <th class="text-left p-3">Produit</th>
+                <th class="text-left p-3">Vues</th>
+                <th class="text-left p-3">Clics WhatsApp</th>
+                <th class="text-left p-3">Conversion</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+                <tr class="border-t hover:bg-slate-50/70">
+                    <td class="p-3 font-medium text-slate-900">{{ row.product.name }}</td>
+                    <td class="p-3">{{ row.views_count }}</td>
+                    <td class="p-3">{{ row.whatsapp_clicks }}</td>
+                    <td class="p-3">
+                        {% if row.conversion_pct is not None %}
+                            <span class="inline-flex rounded-md bg-orange-50 text-orange-700 px-2 py-0.5 text-xs font-semibold">{{ row.conversion_pct }}%</span>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td class="p-3 text-slate-500" colspan="4">Aucun produit pour le moment.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</section>
+{% endblock %}

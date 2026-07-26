@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}Moderation boutiques{% endblock %}
+{% block content %}
+<section class="flex items-center justify-between">
+    <div>
+        <h1 class="text-2xl font-black">Moderation boutiques</h1>
+        <p class="text-sm text-slate-500">Validation manuelle avant publication.</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+        <a href="/admin/products/category/" class="px-3 py-2 border rounded-lg text-sm">Categories produits</a>
+        <a href="/admin/" class="px-3 py-2 border rounded-lg text-sm">Admin classique</a>
+    </div>
+</section>
+
+<section class="mt-6">
+    <h2 class="font-bold">En attente</h2>
+    <div class="mt-3 grid gap-4">
+        {% for shop in pending_shops %}
+            <article class="card-ui p-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <p class="font-semibold">{{ shop.name }}</p>
+                        <p class="text-sm text-slate-500">{{ shop.owner.email }} - {{ shop.city|default:"N/A" }}</p>
+                    </div>
+                    <span class="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded">{{ shop.status }}</span>
+                </div>
+                <p class="text-sm mt-2">{{ shop.description|default:"Sans description" }}</p>
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="shop_id" value="{{ shop.id }}">
+                        <input type="hidden" name="action" value="approve">
+                        <button class="px-3 py-2 rounded-lg bg-green-600 text-white text-sm">Approuver</button>
+                    </form>
+                    <form method="post" class="flex gap-2 items-center">
+                        {% csrf_token %}
+                        <input type="hidden" name="shop_id" value="{{ shop.id }}">
+                        <input type="hidden" name="action" value="reject">
+                        <input name="rejection_reason" class="border rounded-lg p-2 text-sm" placeholder="Motif du rejet">
+                        <button class="px-3 py-2 rounded-lg bg-red-600 text-white text-sm">Rejeter</button>
+                    </form>
+                </div>
+            </article>
+        {% empty %}
+            <p class="text-sm text-slate-500">Aucune boutique en attente.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="mt-8">
+    <h2 class="font-bold">Journal de moderation</h2>
+    <p class="text-sm text-slate-500 mt-1">Dernieres decisions (traçabilite admin).</p>
+    <div class="mt-3 overflow-x-auto bg-white border rounded-xl">
+        <table class="w-full text-sm min-w-[520px]">
+            <thead class="bg-slate-100">
+                <tr>
+                    <th class="text-left p-3">Date</th>
+                    <th class="text-left p-3">Boutique</th>
+                    <th class="text-left p-3">Action</th>
+                    <th class="text-left p-3">Admin</th>
+                    <th class="text-left p-3">Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in moderation_logs %}
+                    <tr class="border-t">
+                        <td class="p-3 whitespace-nowrap">{{ log.created_at|date:"d/m/Y H:i" }}</td>
+                        <td class="p-3">{{ log.shop.name }}</td>
+                        <td class="p-3">
+                            {% if log.action == 'approve' %}
+                                <span class="text-green-700 font-medium">Approuve</span>
+                            {% else %}
+                                <span class="text-red-700 font-medium">Rejete</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-3">{% if log.actor %}{{ log.actor.email|default:log.actor.username }}{% else %}—{% endif %}</td>
+                        <td class="p-3 text-slate-600 max-w-xs truncate" title="{{ log.note }}">{{ log.note|default:"—" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td class="p-3 text-slate-500" colspan="5">Aucune entree pour le moment.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="mt-8">
+    <h2 class="font-bold">Recemment traitees</h2>
+    <div class="mt-3 grid gap-3">
+        {% for shop in recent_reviewed %}
+            <article class="bg-white border rounded-xl p-3">
+                <p class="font-semibold">{{ shop.name }} - <span class="text-sm">{{ shop.status }}</span></p>
+                {% if shop.rejection_reason %}
+                    <p class="text-sm text-slate-500">{{ shop.rejection_reason }}</p>
+                {% endif %}
+            </article>
+        {% empty %}
+            <p class="text-sm text-slate-500">Aucun historique.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Ajouter un produit{% endblock %}
+{% block content %}
+<section class="max-w-2xl mx-auto surface-ui p-6">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+        <h1 class="text-2xl font-black">Ajouter un produit</h1>
+        {% if user.is_staff %}
+            <a href="/admin/products/category/" class="px-3 py-2 border rounded-lg text-sm">Gerer categories</a>
+        {% endif %}
+    </div>
+    <form method="post" enctype="multipart/form-data" class="mt-5 space-y-3">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-primary px-4 py-2">Publier</button>
+    </form>
+</section>
+{% endblock %}

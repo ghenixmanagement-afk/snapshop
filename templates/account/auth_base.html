@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}{% block auth_head_title %}Compte{% endblock %} · SnapShop{% endblock %}
+
+{% block content %}
+<div class="mx-auto w-full max-w-lg px-0 sm:px-2">
+    {% if messages %}
+        <div class="mb-4 space-y-2">
+            {% for message in messages %}
+                <div
+                    role="alert"
+                    class="rounded-xl border px-4 py-3 text-sm {% if message.tags == 'error' %}border-red-200 bg-red-50 text-red-800{% elif message.tags == 'success' %}border-emerald-200 bg-emerald-50 text-emerald-900{% else %}border-slate-200 bg-white text-slate-800{% endif %}"
+                >
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="overflow-hidden rounded-2xl border border-snap-border bg-white shadow-xl shadow-stone-200/40">
+        <div class="h-1.5 bg-gradient-to-r from-[#f5e6d3] via-[#e8d4bc] to-[#c47a3a]" aria-hidden="true"></div>
+        <div class="p-6 sm:p-8">
+            {% block auth_body %}{% endblock %}
+        </div>
+    </div>
+    {% block auth_footer %}{% endblock %}
+</div>
+{% endblock %}

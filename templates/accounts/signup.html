@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% block title %}Inscription · SnapShop{% endblock %}
+{% block content %}
+<div class="mx-auto w-full max-w-lg px-0 sm:px-2">
+    <div class="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xl shadow-slate-200/40">
+        <div class="h-1.5 bg-gradient-to-r from-[#f5e6d3] via-[#e8d4bc] to-[#c47a3a]" aria-hidden="true"></div>
+        <div class="p-6 sm:p-8">
+            <div class="flex items-start gap-3">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-peach-text text-lg font-black text-white shadow-md">
+                    S
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">Créer un compte</h1>
+                    <p class="mt-1 text-sm leading-relaxed text-slate-600">
+                        Rejoignez SnapShop en tant que <strong class="font-semibold text-slate-800">client</strong> ou <strong class="font-semibold text-slate-800">vendeur</strong>. Une minute suffit.
+                    </p>
+                </div>
+            </div>
+
+            <form method="post" class="mt-8 space-y-5" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+                        {% for err in form.non_field_errors %}
+                            <p>{{ err }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="space-y-1.5">
+                        <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-slate-700">
+                            {{ form.first_name.label }}<span class="text-red-500" aria-hidden="true"> *</span>
+                        </label>
+                        {{ form.first_name }}
+                        {% for err in form.first_name.errors %}
+                            <p class="text-sm text-red-600">{{ err }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="space-y-1.5">
+                        <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-slate-700">
+                            {{ form.last_name.label }}<span class="text-red-500" aria-hidden="true"> *</span>
+                        </label>
+                        {{ form.last_name }}
+                        {% for err in form.last_name.errors %}
+                            <p class="text-sm text-red-600">{{ err }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="space-y-1.5">
+                        <label for="{{ form.gender.id_for_label }}" class="block text-sm font-medium text-slate-700">{{ form.gender.label }}</label>
+                        {{ form.gender }}
+                        {% for err in form.gender.errors %}
+                            <p class="text-sm text-red-600">{{ err }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="space-y-1.5">
+                        <label for="{{ form.role.id_for_label }}" class="block text-sm font-medium text-slate-700">
+                            {{ form.role.label }}<span class="text-red-500" aria-hidden="true"> *</span>
+                        </label>
+                        {{ form.role }}
+                        {% for err in form.role.errors %}
+                            <p class="text-sm text-red-600">{{ err }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-slate-700">
+                        {{ form.email.label }}<span class="text-red-500" aria-hidden="true"> *</span>
+                    </label>
+                    {{ form.email }}
+                    {% for err in form.email.errors %}
+                        <p class="text-sm text-red-600">{{ err }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-slate-700">{{ form.username.label }}</label>
+                    {{ form.username }}
+                    {% if form.username.help_text %}
+                        <p class="text-xs text-slate-500">{{ form.username.help_text }}</p>
+                    {% endif %}
+                    {% for err in form.username.errors %}
+                        <p class="text-sm text-red-600">{{ err }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="space-y-1.5">
+                        <label for="{{ form.password1.id_for_label }}" class="block text-sm font-medium text-slate-700">
+                            {{ form.password1.label }}<span class="text-red-500" aria-hidden="true"> *</span>
+                        </label>
+                        {{ form.password1 }}
+                        {% if form.password1.help_text %}
+                            <p class="text-xs leading-relaxed text-slate-500">{{ form.password1.help_text }}</p>
+                        {% endif %}
+                        {% for err in form.password1.errors %}
+                            <p class="text-sm text-red-600">{{ err }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="space-y-1.5">
+                        <label for="{{ form.password2.id_for_label }}" class="block text-sm font-medium text-slate-700">
+                            {{ form.password2.label }}<span class="text-red-500" aria-hidden="true"> *</span>
+                        </label>
+                        {{ form.password2 }}
+                        {% for err in form.password2.errors %}
+                            <p class="text-sm text-red-600">{{ err }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full rounded-xl bg-gradient-to-r from-peach-text to-[#b86a2e] px-4 py-3.5 text-center text-sm font-semibold text-white shadow-lg transition hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-peach-text focus:ring-offset-2 active:scale-[0.99]">
+                    Continuer
+                </button>
+            </form>
+
+            {% if has_google_app or has_facebook_app %}
+                <div class="relative my-8">
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div class="w-full border-t border-slate-200"></div>
+                    </div>
+                    <div class="relative flex justify-center">
+                        <span class="bg-white px-3 text-xs font-medium uppercase tracking-wider text-slate-400">ou en un clic</span>
+                    </div>
+                </div>
+
+                <div class="grid gap-3 sm:grid-cols-2">
+                    {% if has_google_app %}
+                        <a
+                            href="/accounts/google/login/"
+                            class="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800 transition hover:border-slate-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+                        >
+                            <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                            Google
+                        </a>
+                    {% endif %}
+                    {% if has_facebook_app %}
+                        <a
+                            href="/accounts/facebook/login/"
+                            class="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800 transition hover:border-slate-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+                        >
+                            <svg class="h-5 w-5 shrink-0 text-[#1877F2]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            Facebook
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <p class="mt-8 text-center text-sm text-slate-600">
+                Déjà un compte ?
+                <a href="{% url 'account_login' %}" class="font-semibold text-peach-text underline-offset-2 hover:opacity-80 hover:underline">Se connecter</a>
+            </p>
+        </div>
+    </div>
+    <p class="mt-4 px-1 text-center text-xs text-slate-500">
+        En continuant, vous acceptez d’utiliser SnapShop conformément aux règles du service et à la modération des boutiques.
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard vendeur{% endblock %}
+{% block content %}
+<section class="hero-peach p-6 md:p-8 shadow-sm">
+    <p class="text-xs uppercase tracking-wider text-stone-600">Espace vendeur</p>
+    <h1 class="mt-1 text-2xl md:text-3xl font-black tracking-tight text-stone-900">Dashboard vendeur</h1>
+    <p class="mt-2 text-sm text-stone-700">Pilotez votre boutique, vos produits et vos performances depuis un seul espace.</p>
+</section>
+
+{% if not shop %}
+    <section class="surface-ui mt-6 p-6 text-center">
+        <p class="text-slate-700 font-semibold">Aucune boutique configuree</p>
+        <p class="mt-1 text-sm text-slate-500">Creez votre boutique pour publier vos produits et commencer a vendre.</p>
+        <a href="{% url 'manage_shop' %}" class="btn-primary mt-4">Creer ma boutique</a>
+    </section>
+{% else %}
+    <section class="mt-6 grid gap-4 md:grid-cols-3">
+        <article class="card-ui p-5">
+            <p class="text-sm text-slate-500">Boutique</p>
+            <p class="mt-1 text-lg font-black text-slate-900">{{ shop.name }}</p>
+        </article>
+        <article class="card-ui p-5">
+            <p class="text-sm text-slate-500">Statut</p>
+            <p class="mt-2">
+                {% if shop.status == 'ACTIVE' %}
+                    <span class="inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">Active</span>
+                {% elif shop.status == 'PENDING' %}
+                    <span class="inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">En attente</span>
+                {% elif shop.status == 'REJECTED' %}
+                    <span class="inline-flex rounded-full bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-700">Rejetee</span>
+                {% else %}
+                    <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">{{ shop.status }}</span>
+                {% endif %}
+            </p>
+        </article>
+        <article class="card-ui p-5">
+            <p class="text-sm text-slate-500">Produits</p>
+            <p class="mt-1 text-3xl font-black text-slate-900">{{ products_count }}</p>
+        </article>
+    </section>
+
+    {% if rejection_reason %}
+        <section class="mt-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-rose-700">
+            <p class="font-semibold">Motif du rejet admin</p>
+            <p class="mt-1 text-sm">{{ rejection_reason }}</p>
+        </section>
+    {% endif %}
+
+    <section class="mt-6 surface-ui p-4">
+        <p class="text-sm font-semibold text-slate-700">Actions rapides</p>
+        <div class="mt-3 grid gap-2 sm:grid-cols-3">
+            <a href="{% url 'manage_shop' %}" class="btn-secondary w-full">Modifier boutique</a>
+            <a href="{% url 'create_product' %}" class="btn-primary w-full">Ajouter produit</a>
+            <a href="{% url 'seller_analytics' %}" class="btn-secondary w-full">Voir analytics</a>
+        </div>
+    </section>
+
+    <!-- Tableau des produits -->
+    <section class="mt-6 surface-ui p-4">
+        <h2 class="text-sm font-semibold text-slate-700 mb-4">Mes produits</h2>
+        
+        {% if products %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="border-b border-slate-200 bg-slate-50">
+                        <tr>
+                            <th class="text-left px-3 py-2 font-semibold text-slate-700">Image</th>
+                            <th class="text-left px-3 py-2 font-semibold text-slate-700">Produit</th>
+                            <th class="text-left px-3 py-2 font-semibold text-slate-700">Catégorie</th>
+                            <th class="text-center px-3 py-2 font-semibold text-slate-700">Statut</th>
+                            <th class="text-center px-3 py-2 font-semibold text-slate-700">Vues</th>
+                            <th class="text-center px-3 py-2 font-semibold text-slate-700">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                            <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                                <!-- Image -->
+                                <td class="px-3 py-3">
+                                    {% if product.image %}
+                                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-10 h-10 rounded object-cover">
+                                    {% else %}
+                                        <div class="w-10 h-10 rounded bg-slate-200 flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                                            </svg>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                
+                                <!-- Nom -->
+                                <td class="px-3 py-3">
+                                    <p class="font-semibold text-slate-900">{{ product.name }}</p>
+                                    <p class="text-xs text-slate-500">{{ product.price|floatformat:0 }} FCFA</p>
+                                </td>
+                                
+                                <!-- Catégorie -->
+                                <td class="px-3 py-3 text-slate-700">
+                                    <p class="text-xs">{{ product.subcategory.category.name }}</p>
+                                    <p class="text-xs text-slate-500">{{ product.subcategory.name }}</p>
+                                </td>
+                                
+                                <!-- Statut -->
+                                <td class="px-3 py-3 text-center">
+                                    {% if product.in_stock %}
+                                        <span class="inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">En stock</span>
+                                    {% else %}
+                                        <span class="inline-flex rounded-full bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-700">Rupture</span>
+                                    {% endif %}
+                                </td>
+                                
+                                <!-- Nombre de vues -->
+                                <td class="px-3 py-3 text-center">
+                                    <p class="font-semibold text-slate-900">
+                                        {% if product.analytics.first %}
+                                            {{ product.analytics.first.views_count|default:0 }}
+                                        {% else %}
+                                            0
+                                        {% endif %}
+                                    </p>
+                                </td>
+                                
+                                <!-- Actions -->
+                                <td class="px-3 py-3 text-center">
+                                    <div class="flex gap-1 justify-center">
+                                        <!-- Voir -->
+                                        <a href="{{ product.get_absolute_url }}" target="_blank" class="p-1.5 rounded text-blue-600 hover:bg-blue-50 transition" title="Voir">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7S3.732 16.057 2.458 12z"></path>
+                                            </svg>
+                                        </a>
+                                        
+                                        <!-- Modifier -->
+                                        <a href="{% url 'edit_product' product.id %}" class="p-1.5 rounded text-orange-600 hover:bg-orange-50 transition" title="Modifier">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                            </svg>
+                                        </a>
+                                        
+                                        <!-- Supprimer -->
+                                        <form method="POST" action="{% url 'delete_product' product.id %}" style="display:inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce produit?')">
+                                            {% csrf_token %}
+                                            <button type="submit" class="p-1.5 rounded text-rose-600 hover:bg-rose-50 transition" title="Supprimer">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                    <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22"></path>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-8">
+                <p class="text-slate-600">Aucun produit pour le moment.</p>
+                <a href="{% url 'create_product' %}" class="btn-primary mt-3 inline-block">Créer votre premier produit</a>
+            </div>
+        {% endif %}
+    </section>
+{% endif %}
+{% endblock %}

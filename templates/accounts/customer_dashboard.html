@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Mon espace client{% endblock %}
+{% block content %}
+<div class="mx-auto w-full max-w-3xl">
+    <section class="hero-peach p-6 md:p-8 shadow-sm">
+        <h1 class="text-2xl md:text-3xl font-black tracking-tight text-stone-900">Espace client</h1>
+        <p class="mt-1 text-sm text-stone-700">Retrouvez vos favoris et gérez votre activité sur SnapShop.</p>
+        <div class="mt-6 grid gap-4 md:grid-cols-2">
+            <article class="rounded-2xl bg-white/95 text-slate-900 p-5">
+                <p class="text-sm font-medium text-slate-500">Favoris</p>
+                <p id="favorites-count" class="mt-2 text-4xl font-black">{{ favorites_count }}</p>
+                <p class="mt-2 text-xs text-slate-500">Produits enregistrés</p>
+            </article>
+            <article class="rounded-2xl bg-white/95 text-slate-900 p-5">
+                <p class="text-sm font-medium text-slate-500">Avis laissés</p>
+                <p class="mt-2 text-4xl font-black">{{ reviews_count }}</p>
+                <p class="mt-2 text-xs text-slate-500">Un avis par produit</p>
+                <a href="/#produits-tendances" class="mt-2 inline-block text-xs font-semibold text-slate-700 underline">Consulter les differents avis laisses</a>
+            </article>
+        </div>
+    </section>
+
+    <section class="mt-8">
+        <div class="flex items-center justify-between">
+            <h2 class="text-lg font-black tracking-tight text-slate-900">Mes favoris</h2>
+            <span class="text-xs text-slate-500">Cliquez sur le coeur pour retirer</span>
+        </div>
+        <div id="favorites-grid" class="mt-4 grid grid-cols-2 gap-4">
+            {% for item in favorite_items %}
+                <article class="card-ui p-3 favorite-card" data-product-slug="{{ item.product.slug }}">
+                    <div class="relative">
+                        <a href="{% url 'product_detail' item.product.slug %}">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-full h-32 object-cover rounded-xl">
+                            {% else %}
+                                <div class="w-full h-32 rounded-xl bg-slate-100 flex items-center justify-center text-xs text-slate-500">
+                                    Aucune image
+                                </div>
+                            {% endif %}
+                        </a>
+                        <button
+                            type="button"
+                            data-favorite-url="{% url 'toggle_favorite' item.product.slug %}"
+                            class="absolute top-2 right-2 rounded-full bg-white/95 p-2 shadow hover:scale-105 transition js-remove-favorite"
+                            aria-label="Retirer des favoris"
+                            title="Retirer des favoris"
+                        >
+                            <svg viewBox="0 0 24 24" class="h-5 w-5 text-rose-500 fill-current" aria-hidden="true">
+                                <path d="M12 21s-6.7-4.4-9.3-8.1C.9 10.3 1.5 6.7 4.3 4.8 6.4 3.4 9 3.8 10.8 5.6L12 6.8l1.2-1.2c1.8-1.8 4.4-2.2 6.5-.8 2.8 1.9 3.4 5.5 1.6 8.1C18.7 16.6 12 21 12 21z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <a href="{% url 'product_detail' item.product.slug %}" class="block mt-3">
+                        <p class="font-semibold text-slate-900">{{ item.product.name }}</p>
+                        <p class="text-xs text-slate-500">{{ item.product.shop.name }}</p>
+                        <p class="mt-1 font-black text-slate-900">{{ item.product.price }} FCFA</p>
+                    </a>
+                    <a href="{% url 'product_detail' item.product.slug %}#avis" class="mt-2 inline-block text-xs text-slate-600 underline">Voir les avis</a>
+                </article>
+            {% empty %}
+                <article id="empty-favorites" class="col-span-2 rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center">
+                    <p class="font-semibold text-slate-700">Aucun favori pour le moment</p>
+                    <p class="mt-1 text-sm text-slate-500">Parcourez le catalogue et ajoutez des produits avec le coeur.</p>
+                    <a href="/" class="btn-primary mt-4">Explorer les produits</a>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+<script>
+(() => {
+    const countEl = document.getElementById("favorites-count");
+    const grid = document.getElementById("favorites-grid");
+    const removeButtons = document.querySelectorAll(".js-remove-favorite");
+
+    const renderEmptyState = () => {
+        if (!grid) return;
+        const remaining = grid.querySelectorAll(".favorite-card").length;
+        if (remaining > 0 || grid.querySelector("#empty-favorites")) return;
+        const card = document.createElement("article");
+        card.id = "empty-favorites";
+        card.className = "col-span-2 rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center";
+        card.innerHTML = '<p class="font-semibold text-slate-700">Aucun favori pour le moment</p><p class="mt-1 text-sm text-slate-500">Parcourez le catalogue et ajoutez des produits avec le coeur.</p><a href="/" class="btn-primary mt-4">Explorer les produits</a>';
+        grid.appendChild(card);
+    };
+
+    removeButtons.forEach((btn) => {
+        btn.addEventListener("click", async () => {
+            const url = btn.dataset.favoriteUrl;
+            if (!url) return;
+            btn.disabled = true;
+            try {
+                const response = await fetch(url, {
+                    method: "GET",
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                });
+                if (!response.ok) throw new Error("Request failed");
+                const data = await response.json();
+                if (data.ok && data.removed) {
+                    const card = btn.closest(".favorite-card");
+                    if (card) card.remove();
+                    if (countEl && typeof data.favorites_count === "number") {
+                        countEl.textContent = String(data.favorites_count);
+                    }
+                    renderEmptyState();
+                } else {
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                btn.disabled = false;
+            }
+        });
+    });
+})();
+</script>
+{% endblock %}
