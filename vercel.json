@@ -2,15 +2,15 @@
   "version": 2,
   "builds": [
     {
-      "src": "votre_nom_de_projet/wsgi.py",
+      "src": "snapshop/wsgi.py",
       "use": "@vercel/python",
-      "config": { "maxLambdaSize": "15mb", "runtime": "python3.11" }
+      "config": { "maxLambdaSize": "15mb", "runtime": "python3.13.7" }
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "votre_nom_de_projet/wsgi.py"
+      "dest": "snapshop/wsgi.py"
     }
   ]
 }
